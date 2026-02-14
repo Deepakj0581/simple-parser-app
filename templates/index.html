@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Transaction Parser</title>
+</head>
+<body>
+    <h2>Upload PDF or CSV</h2>
+    <input type="file" id="fileInput" />
+    <button onclick="uploadFile()">Upload</button>
+    <h3>Output:</h3>
+    <pre id="output"></pre>
+    <script>
+        async function uploadFile() {
+            const file = document.getElementById("fileInput").files[0];
+            if (!file) return alert("Select a file");
+            const formData = new FormData();
+            formData.append("file", file);
+            const response = await fetch("/upload", { method: "POST", body: formData });
+            const data = await response.json();
+            document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>
+
