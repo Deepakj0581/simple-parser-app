@@ -33,19 +33,28 @@ def home():
                     os.remove(filename)
 
     return render_template_string("""
-        <h1>Upload CSV or PDF</h1>
-        <form method="post" enctype="multipart/form-data">
-            <input type="file" name="file" required>
-            <button type="submit">Upload</button>
-        </form>
-        {% if error %}
-        <p style="color:red;">{{ error }}</p>
-        {% endif %}
-        {% if result %}
-        <h2>Output:</h2>
-        <pre style="max-height:300px; overflow:auto; background:#f0f0f0; padding:10px; border-radius:5px;">{{ result | tojson(indent=2) }}</pre>
-        {% endif %}
-    """, result=result, error=error)
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Parser</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Upload CSV or PDF</h1>
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Upload</button>
+    </form>
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+    {% if result %}
+    <h2>Output:</h2>
+    <pre>{{ result | tojson(indent=2) }}</pre>
+    {% endif %}
+</body>
+</html>
+""", result=result, error=error)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    app.run(host="0.0.0.0", port=5050)  # Use 5050 for local testing
