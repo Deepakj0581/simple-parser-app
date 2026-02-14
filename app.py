@@ -1,56 +1,39 @@
 import os
-import csv
-import pdfplumber
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
+import pandas as pd
+from PyPDF2 import PdfReader
 
 app = Flask(__name__)
-UPLOAD_FOLDER = "uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-def parse_csv(filepath):
-    transactions = []
-    with open(filepath, newline='', encoding='utf-8') as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            transactions.append(row)
-    return transactions
-
-def parse_pdf(filepath):
-    transactions = []
-    with pdfplumber.open(filepath) as pdf:
-        for page in pdf.pages:
-            text = page.extract_text()
-            if text:
-                lines = text.split("\n")
-                for line in lines:
-                    transactions.append(line.split())
-    return transactions
 
 @app.route("/")
-def index():
-    return render_template("index.html")
+def home():
+    return """
+    <h1>Upload CSV or PDF</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Upload</button>
+    </form>
+    """
 
 @app.route("/upload", methods=["POST"])
-def upload():
-    if "file" not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
-    file = request.files["file"]
-    if file.filename == "":
-        return jsonify({"error": "Empty filename"}), 400
-    filepath = os.path.join(UPLOAD_FOLDER, file.filename)
-    file.save(filepath)
+def upload_file():
+    file = request.files['file']
+    filename = file.filename
+    file.save(filename)
+
     try:
-        if file.filename.lower().endswith(".csv"):
-            transactions = parse_csv(filepath)
-        elif file.filename.lower().endswith(".pdf"):
-            transactions = parse_pdf(filepath)
-        else:
-            return jsonify({"error": "Unsupported file type"}), 400
-        return jsonify({"transactions": transactions})
+        transactions = []
+        if filename.endswith(".csv"):
+            df = pd.read_csv(filename)
+            transactions = df.to_dict(orient="records")
+        elif filename.endswith(".pdf"):
+            reader = PdfReader(filename)
+            for page in reader.pages:
+                transactions.append(page.extract_text())
+        return jsonify(transactions)
     finally:
-        if os.path.exists(filepath):
-            os.remove(filepath)
+        if os.path.exists(filename):
+            os.remove(filename)
 
 if __name__ == "__main__":
-    app.run(debug=True)
-
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
