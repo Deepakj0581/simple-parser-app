@@ -2,4 +2,3 @@ Flask==3.1.2
 pandas==2.1.2
 PyPDF2==3.1.0
 gunicorn==25.1.0
-
