@@ -30,15 +30,33 @@ button:hover {
     background-color: #2980b9;
 }
 
-pre {
-    max-height: 300px;
-    overflow: auto;
-    background: #f0f0f0;
-    padding: 10px;
-    border-radius: 5px;
-}
-
 p.error {
     color: red;
     font-weight: bold;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 10px;
+}
+
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+table th {
+    background-color: #eee;
+}
+
+.pdf-output {
+    max-height: 400px;
+    overflow-y: auto;
+    background: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
