@@ -26,10 +26,12 @@ def home():
                     is_csv = True
                 elif filename.endswith(".pdf"):
                     reader = PdfReader(filename)
-                    text_pages = []
+                    pages = []
                     for page in reader.pages:
-                        text_pages.append(page.extract_text())
-                    result = text_pages
+                        text = page.extract_text()
+                        if text:
+                            pages.append(text.strip())
+                    result = pages
                     is_csv = False
             finally:
                 if os.path.exists(filename):
@@ -77,7 +79,7 @@ def home():
         {% else %}
             <div class="pdf-output">
                 {% for page in result %}
-                    <pre>{{ page }}</pre>
+                    <p>{{ page | replace('\n', '<br>') | safe }}</p>
                     <hr>
                 {% endfor %}
             </div>
