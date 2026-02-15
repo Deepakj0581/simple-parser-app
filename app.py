@@ -26,12 +26,13 @@ def home():
                     is_csv = True
                 elif filename.endswith(".pdf"):
                     reader = PdfReader(filename)
-                    pages = []
+                    pages_text = []
                     for page in reader.pages:
                         text = page.extract_text()
                         if text:
-                            pages.append(text.strip())
-                    result = pages
+                            # Flatten lines into a single paragraph
+                            pages_text.append("\n".join([line.strip() for line in text.splitlines() if line.strip()]))
+                    result = pages_text
                     is_csv = False
             finally:
                 if os.path.exists(filename):
